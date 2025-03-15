@@ -37,7 +37,6 @@ def drop_tables():
           DROP TABLE IF EXISTS table_format_edge_cases;
           DROP TABLE IF EXISTS table_formats;
           DROP TABLE IF EXISTS documents;
-                  
           
           DROP TABLE IF EXISTS conversation_messages;
           DROP TABLE IF EXISTS conversations;
@@ -166,6 +165,7 @@ def init_conversations_tables():
           FOREIGN KEY (document_category) REFERENCES document_categories(name)
         );  
     """)
+    # Lecturers might have gotten into my head (use composite keys?)
     cur.execute("""
         CREATE TABLE IF NOT EXISTS conversation_messages (
           id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
