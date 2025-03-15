@@ -22,8 +22,8 @@ export function ChatInput() {
   };
 
   return (
-    <div className="flex fixed bottom-0 py-4 px-6">
-      <Input value={message} onChange={(e) => setMessage(e.target.value)} />
+    <div className="flex fixed bottom-0 py-4 px-6 w-full">
+      <Input value={message} placeholder="Ask anything" onChange={(e) => setMessage(e.target.value)} />
       <Button className="ml-2 bg-blue-700 " onClick={handleSendMessage}>Send</Button>
     </div>
   );
