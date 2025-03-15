@@ -25,6 +25,8 @@ def run_agent(prompt: str = None, attachment: str = None, context_messages: list
                 break # BUG: Need to key in exit twice. 
             elif user_input == "new agent":
                 last_context: list[dict[str, str]] = agent.get_latest_response()
+                if type(last_context) != list:
+                    last_context = [last_context]
                 logging.info(f"Creating new agent with context:\n{last_context}")
                 run_agent(context_messages = last_context)
             else:
