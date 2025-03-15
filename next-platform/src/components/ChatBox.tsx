@@ -1,7 +1,7 @@
 "use client";
 import { QueryBody } from "./QueryBody";
 import { ResponseBody } from "./ResponseBody";
-
+import { ShinyText } from "./ui/ShinyText";
 
 interface Interactions {
   user: string;
@@ -17,8 +17,8 @@ export function ChatBox({ messages }: Messages) {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="text-center space-y-4 max-w-lg">
-          <h2 className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">Welcome to AI Chat Assistant</h2>
-          <p className="text-zinc-600 dark:text-zinc-400">Start a conversation by typing a message below.</p>
+          <ShinyText text="now.tech" element="h2" />
+          <p className="text-zinc-400">Start a conversation by typing a message below.</p>
         </div>
       </div>
     )
