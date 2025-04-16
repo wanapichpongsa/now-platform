@@ -2,18 +2,25 @@
 
 import ollama from 'ollama/browser';
 import { NextRequest, NextResponse } from 'next/server';
+import { cacheMessage, getLatestCacheKey } from '@/lib/redis';
 
 // define params on client side
 // Shold be NextRequest && NextResponse
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
-    const { message } = await req.json(); // implicitly gets body
-    const aiResponse = await conversationAgent("deepseek-r1:8b", message); // scroll down
+    const { userInput } = await req.json();
+
+    const cacheKey = (await getLatestCacheKey()) || "1";
+    await cacheMessage(cacheKey, userInput);
+    
+    const aiResponse = await conversationAgent("deepseek-r1:8b", userInput);
+    
+    await cacheMessage((parseInt(cacheKey) + 1).toString(), aiResponse);
 
     return NextResponse.json({
       status: 200,
       body: aiResponse
-    })
+    });
   } catch (error) {
     throw error;
   };
