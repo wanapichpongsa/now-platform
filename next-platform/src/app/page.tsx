@@ -4,6 +4,7 @@
 import { ChatInput } from "@/components/ChatInput";
 // component && types
 import { ChatBox, Interaction } from "@/components/ChatBox";
+import Navbar from "@/components/Navbar";
 
 // built-in methods
 import { useState } from "react";
@@ -44,6 +45,7 @@ export default function Home() {
 
   return (
     <main className="relative flex flex-col h-screen items-center bg-black">
+      <Navbar/>
       {/* flex-1 to grow with messages */}
       <div className="flex-1 w-full overflow-hidden">
         <ChatBox messages={messages} />
