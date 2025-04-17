@@ -2,7 +2,7 @@
 
 import ollama from 'ollama/browser';
 import { NextRequest, NextResponse } from 'next/server';
-import { cacheMessage, getLatestCacheKey } from '@/lib/redis';
+import { cacheMessage } from '@/lib/redis';
 
 // define params on client side
 // Shold be NextRequest && NextResponse
@@ -10,12 +10,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const { userInput } = await req.json();
 
-    const cacheKey = (await getLatestCacheKey()) || "1";
-    await cacheMessage(cacheKey, userInput);
+    await cacheMessage(userInput);
     
     const aiResponse = await conversationAgent("deepseek-r1:8b", userInput);
     
-    await cacheMessage((parseInt(cacheKey) + 1).toString(), aiResponse);
+    await cacheMessage(aiResponse);
 
     return NextResponse.json({
       status: 200,
@@ -40,6 +39,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       content: "You are a helpful data transformation agent that classifies bank statement invoices to spending categories." 
     });
     */
+   prompts.push({role: 'system', content: 'You are a helpful assistant'});
     prompts.push({ 
       role: 'user', 
       content: userPrompt 
