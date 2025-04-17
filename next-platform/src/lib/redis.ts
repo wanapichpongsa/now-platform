@@ -40,7 +40,9 @@ export async function cacheFile(base64String: string): Promise<string> {
 export async function getCachedFile(
   key: string
 ): Promise<string | null> {
+  console.log("received key: " + key);
   const splitKey = key.split('-');
+  console.log(`splitKey: ${splitKey}`)
   if (splitKey[0] !== "FS" && !(parseInt(splitKey[1]))) throw new Error('file key must be FS-{int}');
   return await redis.get(key);
 }

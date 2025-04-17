@@ -61,6 +61,7 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
         value={message} 
         placeholder="Ask anything" 
         onChange={(e) => setMessage(e.target.value)} 
+        disabled={isUploading}
       />
       {/* TODO: make button faded when !message */}
       <div className="flex">
