@@ -55,7 +55,13 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
 
   return (
     <div className="relative flex gap-2 bottom-0 py-4 px-24 w-full">
-      <Input value={message} placeholder="Ask anything" onChange={(e) => setMessage(e.target.value)} />
+      <input 
+        className="pl-4 bg-zinc-100 rounded-lg w-full"
+        id="promptMessage"
+        value={message} 
+        placeholder="Ask anything" 
+        onChange={(e) => setMessage(e.target.value)} 
+      />
       {/* TODO: make button faded when !message */}
       <div className="flex">
         {/* file not in enum type? */}
