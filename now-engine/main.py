@@ -6,13 +6,13 @@ import logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-
 def get_pdf_pages(path: str) -> list:
     pages = []
     with pdfplumber.open(path) as pdf:
         for page in pdf.pages:
             pages.append(page.extract_text())
     return pages
+
 
 def run_agent(prompt: str = None, attachment: str = None, context_messages: list[any] = []) -> None:
     from agent import ConversationalAgent

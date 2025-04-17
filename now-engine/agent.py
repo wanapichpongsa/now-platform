@@ -57,7 +57,14 @@ def log_conversation_messages(conversation_id: str, user_query: str, response: s
             conn.commit()
 
 """
-Agent class which uses insert functions to log conversation messages.
+Agent class which uses insert functions to log conversation messages. <- Gradient boosting. <- Decision tree, random forest?
+Classifier model first (for each document) -> What case it belongs to. <- XG Boost, Random Forest, etc.
+2 smaller models?
+Class grouping?
+Clustering algorithm: Unsupervised learning? <- for seeing <- Don't do...
+Huggingface zero shot leearning model?
+
+Brainstorm types of documents -> Create classifiers, create classes seperately or group together use same model.
 """
 
 class ConversationalAgent:
@@ -80,6 +87,7 @@ class ConversationalAgent:
     def system_prompt(self, system_prompt: str) -> None:
         self.messages.append({"role": "system", "content": system_prompt})
 
+    # TODO: return response for chatbot?
     def conversation(self, user_query: str, attachment: str = None) -> None:
         if attachment:
             user_query += f"\nAttachment: {attachment}"
@@ -92,8 +100,7 @@ class ConversationalAgent:
         # to give ST memory within a conversation, we have input previous messages.
         response = self.client.chat(model=self.model, messages=self.messages)
 
-        self.messages.append(
-            {"role": "assistant", "content": response.message.content})
+        self.messages.append({"role": "assistant", "content": response.message.content})
 
         log_conversation_messages(self.conversation_id, user_query, response.message.content)
 

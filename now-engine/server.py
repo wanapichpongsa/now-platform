@@ -10,6 +10,14 @@ def get_agent_response(message: str):
   agent.conversation(message)
   return agent.get_latest_response()
 
+"""
+Python code is so highly nested it hurts my eyes to read it!
+
+Current Roles:
+
+
+Missing Roles:
+"""
 class RequestHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
       if self.path == '/now-engine':
@@ -24,6 +32,8 @@ class RequestHandler(SimpleHTTPRequestHandler):
             response = {'message': 'Bad Request: Empty request body'}
             self.wfile.write(json.dumps(response).encode())
             return
+          
+
           post_data: bytes = self.rfile.read(content_length)
           post_data = str(post_data, 'utf-8')
           logging.info(f"Raw data received: {post_data}")
