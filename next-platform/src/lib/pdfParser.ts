@@ -10,9 +10,17 @@ pdftotextjs --layout option to preserve layout. Adobe works but paid.
 Source: https://www.reddit.com/r/node/comments/186y7y0/looking_for_a_good_pdfparser_to_extract_text_any/
 */
 
+import { DirectoryLoader } from "langchain/document_loaders/fs/directory";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+/*
+Once we have an in-app directory
+const directoryLoader = new DirectoryLoader(process.env.PDF_DIRECTORY!, {
+  ".pdf": (path: string) => new PDFLoader(path),
+});
 
+const directoryDocs = await directoryLoader.load();
+*/
 
 export async function getPDFChunks() {
   try {
