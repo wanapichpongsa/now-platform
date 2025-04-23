@@ -43,25 +43,31 @@ async function initPineconeClient() {
         indexes: {name: string, ...}[]
       }
     */
-    const indexExists: boolean = await new Promise<boolean>(() => {
-      existingIndexes.indexes?.map((index) => {
-        if (index.name === "now-tech-1") return true
-      })
-      return false
-    })
+    console.info("Checking pre-existing indexes");
+    const indexExists: boolean = await new Promise<boolean>((resolve) => {
+      const exists = existingIndexes.indexes?.some((index) => index.name === "now-tech-1") ?? false;
+      if (exists) {
+        console.log("index 'now-tech-1' already exists");
+      } else {
+        console.log("index 'now-tech-1' doesn't exist");
+      }
+      resolve(exists); // need resolve for promise to change to 'fulfilled' state
+    });
+
     if (!indexExists) {
+      console.log("Creating index 'now-tech-1'...")
       createIndex(pc);
-    } else {
-      console.info("index 'now-tech-1' already exists");
     }
     return pc
+
   } catch (error) {
     console.error(error);
     throw new Error("Pinecone client initialization failed"); // createIndex nested, so parent fn also fails, both error msg should be mentioned
   }
 }
 
-export async function getPineconeClient() {
+// createIndex: boolean = false?
+export default async function getPineconeClient() {
   if (!pc) {
     pc = await initPineconeClient();
   }

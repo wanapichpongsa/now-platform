@@ -40,7 +40,7 @@ export default async function getPDFChunks(): Promise<LangDocument[]> {
   });
 
   const chunkedDocs = await textSplitter.splitDocuments(docs);
-  
+  console.log(chunkedDocs.slice(0,2)); // format is messed up. Parse to endpoint to see
   return chunkedDocs
 
   } catch (error) {
