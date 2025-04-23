@@ -10,9 +10,10 @@ pdftotextjs --layout option to preserve layout. Adobe works but paid.
 Source: https://www.reddit.com/r/node/comments/186y7y0/looking_for_a_good_pdfparser_to_extract_text_any/
 */
 
-import { DirectoryLoader } from "langchain/document_loaders/fs/directory";
-import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+// import { DirectoryLoader } from "langchain/document_loaders/fs/directory";
+import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf"; // 76.76KB
+import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters"; // 77.69KB
+import { Document } from "@langchain/core/documents";
 /*
 Once we have an in-app directory
 const directoryLoader = new DirectoryLoader(process.env.PDF_DIRECTORY!, {
@@ -22,7 +23,7 @@ const directoryLoader = new DirectoryLoader(process.env.PDF_DIRECTORY!, {
 const directoryDocs = await directoryLoader.load();
 */
 
-export async function getPDFChunks() {
+export async function getPDFChunks(): Promise<Document[]> {
   try {
   const bankStatementPath = process.env.PDF_PATH!;
 
@@ -35,13 +36,12 @@ export async function getPDFChunks() {
     chunkOverlap: 200,
   });
 
-  const splitDocs = await textSplitter.splitDocuments(docs);
-  console.log(splitDocs[0].pageContent);
+  const chunkedDocs = await textSplitter.splitDocuments(docs);
+  
+  return chunkedDocs
 
   } catch (error) {
     console.error("error: " + error);
     throw new Error("PDF chunking failed")
   }
 }
-
-getPDFChunks();
