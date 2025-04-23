@@ -2,6 +2,8 @@
 import { Pinecone } from "@pinecone-database/pinecone";
 import { env } from "./env";
 
+// A function for those who want to init Pinecone Indexes via API
+
 /* 
 Union type mutable declaration known as 'singleton instance'
 Node.js && Next.js cache module && its module variables after first import, 
