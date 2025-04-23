@@ -26,7 +26,7 @@ const directoryLoader = new DirectoryLoader(process.env.PDF_DIRECTORY!, {
 const directoryDocs = await directoryLoader.load();
 */
 
-export async function getPDFChunks(): Promise<LangDocument[]> {
+export default async function getPDFChunks(): Promise<LangDocument[]> {
   try {
   const bankStatementPath = process.env.PDF_PATH!;
 
@@ -44,7 +44,7 @@ export async function getPDFChunks(): Promise<LangDocument[]> {
   return chunkedDocs
 
   } catch (error) {
-    console.error("error: " + error);
+    console.error(error);
     throw new Error("PDF chunking failed")
   }
 }

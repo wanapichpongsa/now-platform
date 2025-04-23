@@ -26,7 +26,7 @@ async function createIndex(pc: Pinecone): Promise<void> {
       }
     });
   } catch (error) {
-    console.log("error: " + error);
+    console.error(error);
     throw new Error("Index creation failed");
   }
 }
@@ -52,11 +52,11 @@ async function initPineconeClient() {
     if (!indexExists) {
       createIndex(pc);
     } else {
-      console.log("index 'now-tech-1' already exists");
+      console.info("index 'now-tech-1' already exists");
     }
     return pc
   } catch (error) {
-    console.log("error: " + error);
+    console.error(error);
     throw new Error("Pinecone client initialization failed"); // createIndex nested, so parent fn also fails, both error msg should be mentioned
   }
 }
