@@ -81,7 +81,10 @@ class ConversationalAgent:
         self.model_type = model_type
         self.messages = context_messages
         self.conversation_id = log_conversation(
-            self.model, self.model_type, self.document_category)
+            self.model, 
+            self.model_type, 
+            self.document_category
+        )
         self.conversation_instances = 0
 
     def system_prompt(self, system_prompt: str) -> None:

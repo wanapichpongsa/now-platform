@@ -5,6 +5,7 @@ description = "multimodal RAG agent"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "fastapi[standard]>=0.115.12",
     "ollama>=0.4.7",
     "pdfplumber>=0.11.5",
     "psycopg2-binary>=2.9.10",
