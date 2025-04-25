@@ -1,8 +1,8 @@
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-from urllib.parse import unquote
+from fastapi import FastAPI, UploadFile, File
+# from urllib.parse import unquote
 import logging
 import pdfplumber
+from io import BytesIO
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -18,22 +18,20 @@ app = FastAPI()
 def read_root():
   return {"Hello from now-engine"}
 
-# multipart/form-data
-# : UploadFile = File(...)
-@app.get("/pdfparser/{pdf_path:path}")
-def read_item(pdf_path: str):
-    actual_path = unquote(pdf_path)  # decodes the URL-encoded path
-    pages = get_pdf_pages(actual_path)
-    pages_as_text = ""
-    for page in pages: 
-        pages_as_text += page + "\n"
-    return JSONResponse(
-        content={
-            "pdf_path": actual_path,
-            "parsed_content": pages_as_text
-        },
-        media_type="application/json"
-    )
+# How access multipart/form-data body?
+# API Doesn't work. Will be using SimpleHTTPServer in the meantime
+# multipart/form-data worked for SimpleHTTPServer, but fastapi abstraction confuses me
+@app.post("/pdfparser/")
+async def parse_pdf(body: UploadFile = File(...)):
+    print("body: " + body)
+    contents = await body.read()
+    print("contents: " + contents)
+    with pdfplumber.open(BytesIO(contents)) as pdf:
+        text = ""
+        for page in pdf.pages:
+            text += page.extract_text() + "\n"
+        print(text)
+    return {"parsed_content": text}
 
 """
 {
