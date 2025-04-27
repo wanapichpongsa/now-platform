@@ -61,6 +61,10 @@ export default async function embedAndStoreDocs(
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   await delay(30000);
 
+  // log vector count
+  const stats = await pcIndex.describeIndexStats();
+  console.log(stats)
+
   console.info(`Successful embed upload of doc#${docId}`);
 
   } catch (error) {
