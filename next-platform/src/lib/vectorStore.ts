@@ -2,48 +2,48 @@
 
 import { env } from "./env";
 import { Pinecone } from "@pinecone-database/pinecone";
-// langchain methods
-import { PineconeStore } from "@langchain/pinecone";
-import { OpenAIEmbeddings } from "@langchain/openai";
-// type
-import { Document as LangDocument } from "@langchain/core/documents";
 
 export default async function embedAndStoreDocs(
   pc: Pinecone, 
-  docs: LangDocument[]
+  docId: number, // declare as params so accessible to catch(e)
+  text: string
 ): Promise<void> {
   try {
-  const embeddings = new OpenAIEmbeddings({
-    apiKey: env.OPENAI_API_KEY,
-    model: "text-embedding-3-small",
-  });
+  // Document instance has local id e.g., doc#1vec#1
+  const pcIndex = pc.index("now-tech-1"); // no host url (latest) and namespace (free)
+  const model = 'text-embedding-3-small';
 
-  const pcIndex = pc.Index("now-tech-1");
-
-  // refactorable since need to query via .similaritySearch() || asRetriever().
-  const vectorStore = await PineconeStore.fromExistingIndex(
-    embeddings, 
-    {
-      pineconeIndex: pcIndex,
-      maxConcurrency: 5, // Each batch is 1000 vectors.
+  interface Record {
+    id: string,
+    text: string
+  }
+  const chunk = async (
+    docId: number,
+    text: string, 
+    chunkSize: number = 1000
+  ): Promise<Record[]> => {
+    const iterations = Math.ceil(text.length / chunkSize); // 1.01 -> 2
+    console.log(`text.length: ${text.length} iterations: ${iterations}`);
+    let chunks: Record[] = [];
+    for (let i = 0; i < iterations; i++) {
+      const lowerBound = i * chunkSize;
+      const upperBound = Math.min((i + 1) * chunkSize, text.length); // self-explanatory
+      const chunk = text.slice(lowerBound, upperBound);
+      chunks.push({id: `doc#${docId}vec#${i+1}`, text: chunk});
     }
-  );
-  /* 
-    default ids are 'doc' + docNum + '#' + pageNum
-    accessed .listPagination() 
-    SEE: https://docs.pinecone.io/guides/data/list-record-ids
-    OR UUID by default
-  */
-  await vectorStore.addDocuments(docs);
+    return chunks
+  }
+
+  console.log(await chunk(docId, text));
 
   // delay 30s before queryable
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   await delay(30000);
 
-    console.info(`Successful embed upload of ${docs[0].metadata.source}`);
+  console.info(`Successful embed upload of doc#${docId}`);
 
   } catch (error) {
     console.error(error);
-    throw new Error(`Failed embed upload of ${docs[0].metadata.source}`)
+    throw new Error(`Failed embed upload of doc#${docId}`)
   }
 }
