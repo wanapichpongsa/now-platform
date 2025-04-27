@@ -52,19 +52,24 @@ class RequestHandler(SimpleHTTPRequestHandler):
                     if b'name="file"' in part and b'filename=' in part:
                         # All this to only remove 68 characters. TODO: perhaps just check this straight from post_data
                         logging.info(f"file part length: {len(part)}")
-                        filename: str = part.split(b'filename=')[1].split(b'\r\n')[0].strip(b'"').decode()
+                        file_name: str = part.split(b'filename=')[1].split(b'\r\n')[0].strip(b'"').decode()
                         # Find start of file content (after double \r\n). \r is carriage return like on a typewriter.
                         file_content: bytes = part.split(b'\r\n\r\n')[1].rsplit(b'\r\n', 1)[0]
-                        # Not sure whether pdfplumber can open(self.rfile: BinaryIO) or file_content directly (try next iter) 
-                        with os.open(f'pdfs/{filename}', 'wb') as f:
-                            f.write(file_content)
                         
-                        with pdfplumber.open(f"pdfs/{filename}") as pdf:
+                        file_path = f'pdfs/{file_name}'
+                        logging.info(f"writing {file_path}")
+                        # 2025-04-25 21:29:12,355 - ERROR - Error: 'str' object cannot be interpreted as an integer
+                        logging.info(f"file_content type: {type(file_content)}") # says bytes but not int?
+                        with open(file_path, 'wb') as f:
+                            f.write(file_content) # The error exists here. I'm sure.
+                        
+                        logging.info("parsing with pdfplumber...")
+                        with pdfplumber.open(file_path) as pdf:
                             text = ""
                             for page in pdf.pages:
                                 text += page.extract_text() + "\n"
                         
-                        # don't know how to delete file yet so weary on f.write()  or f.write("")
+                            # don't know how to delete file yet so weary on f.write()  or f.write("")
                         
                             # Are these processes asynchronous, not on wfile?
                             self.send_response(200)
