@@ -2,6 +2,7 @@
 
 import { env } from "./env";
 import { Pinecone } from "@pinecone-database/pinecone";
+import { OpenAI } from "openai";
 
 export default async function embedAndStoreDocs(
   pc: Pinecone, 
@@ -10,17 +11,16 @@ export default async function embedAndStoreDocs(
 ): Promise<void> {
   try {
   // Document instance has local id e.g., doc#1vec#1
-  const pcIndex = pc.index("now-tech-1"); // no host url (latest) and namespace (free)
-  const model = 'text-embedding-3-small';
-
   interface Record {
     id: string,
     text: string
   }
-  const chunk = async (
+  
+  // HINDSIGHT: Each record should be each invoice line or contiguous lines per day instead
+  const chunkToRecords = async (
     docId: number,
     text: string, 
-    chunkSize: number = 1000
+    chunkSize: number = 500
   ): Promise<Record[]> => {
     const iterations = Math.ceil(text.length / chunkSize); // 1.01 -> 2
     console.log(`text.length: ${text.length} iterations: ${iterations}`);
@@ -34,8 +34,29 @@ export default async function embedAndStoreDocs(
     return chunks
   }
 
-  console.log(await chunk(docId, text));
+  const records: Record[] = await(chunkToRecords(docId, text));
+  console.log(records);
 
+  // 252 chars invoice table => 1,536 val, <$0.01, 111 input tokens
+  const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY });
+  const response = await openai.embeddings.create({
+    model: "text-embedding-3-small",
+    input: records.map(r => r.text),
+  });
+  const embeddings: number[][] = response.data.map(e => e.embedding);
+
+  const numEmbeddingValues = embeddings.reduce((sum, e) => sum + e.length, 0);
+  console.log(numEmbeddingValues)
+
+  const vectors = records.map((r, i) => ({
+    id: r.id,
+    values: embeddings[i],
+    metadata: { text: r.text }
+  }));
+
+  const pcIndex = pc.index("now-tech-1"); // no host url (latest) and namespace (free)
+  await pcIndex.upsert(vectors);
+  
   // delay 30s before queryable
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
   await delay(30000);
